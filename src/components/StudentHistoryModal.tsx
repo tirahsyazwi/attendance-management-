@@ -43,11 +43,11 @@ export const StudentHistoryModal: React.FC<StudentHistoryModalProps> = ({
           <div className="p-6 sm:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-indigo-100">
-                {student.name.charAt(0)}
+                {student.name?.charAt(0) || '?'}
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">{student.name}</h2>
-                <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest mt-1">{student.class}</p>
+                <h2 className="text-xl font-bold text-slate-900">{student.name || 'Murid'}</h2>
+                <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest mt-1">{student.class_name || student.class}</p>
               </div>
             </div>
             <button 

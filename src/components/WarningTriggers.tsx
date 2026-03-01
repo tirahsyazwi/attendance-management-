@@ -43,10 +43,10 @@ export const WarningTriggers: React.FC<WarningTriggersProps> = ({
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-xl font-bold text-slate-600 border border-slate-200 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                    {trigger.studentName.charAt(0)}
+                    {trigger.studentName?.charAt(0) || '?'}
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900">{trigger.studentName}</h3>
+                    <h3 className="text-lg font-bold text-slate-900">{trigger.studentName || 'Murid'}</h3>
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{trigger.studentClass}</p>
                   </div>
                 </div>

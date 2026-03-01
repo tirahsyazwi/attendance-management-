@@ -281,18 +281,24 @@ async function startServer() {
 
   // Warning Letter Logic
   app.get("/api/warning-triggers", authenticateToken, (req, res) => {
-    // Logic: 3 consecutive days absent OR 10 days total absent in current month
     const students = db.prepare("SELECT * FROM students").all();
     const triggers = [];
+    const today = new Date().toISOString().split('T')[0];
 
-    for (const student of students) {
+    for (const student of students as any[]) {
       const history = db.prepare(`
         SELECT date, status, reason FROM attendance 
         WHERE student_id = ? 
-        ORDER BY date DESC LIMIT 30
-      `).all(student.id);
+        ORDER BY date DESC
+      `).all(student.id) as any[];
 
-      // Check consecutive
+      const issuedLetters = db.prepare(`
+        SELECT type FROM warning_letters WHERE student_id = ?
+      `).all(student.id) as any[];
+
+      const letterTypes = issuedLetters.map(l => l.type);
+
+      // Calculate consecutive unexcused absences
       let consecutiveAbsent = 0;
       for (const day of history) {
         if (day.status === 'absent' && !day.reason) {
@@ -302,19 +308,63 @@ async function startServer() {
         }
       }
 
-      // Check total
+      // Calculate total unexcused absences (all time for this student in current db)
       const totalAbsentUnexcused = history.filter(h => h.status === 'absent' && !h.reason).length;
 
-      if (consecutiveAbsent >= 3 || totalAbsentUnexcused >= 10) {
+      let nextType = "";
+      let triggerReason = "";
+
+      // Rules:
+      // Consecutive: 3 (A1), 10 (A2), 17 (A3), 31 (BS)
+      // Non-consecutive: 10 (A1), 20 (A2), 40 (A3), 60 (BS)
+
+      if (consecutiveAbsent >= 31 || totalAbsentUnexcused >= 60) {
+        if (!letterTypes.includes("Buang Sekolah")) {
+          nextType = "Buang Sekolah";
+          triggerReason = consecutiveAbsent >= 31 ? "31 Hari Berturut-turut" : "60 Hari Tidak Berturut-turut";
+        }
+      } else if (consecutiveAbsent >= 17 || totalAbsentUnexcused >= 40) {
+        if (!letterTypes.includes("Amaran 3")) {
+          nextType = "Amaran 3";
+          triggerReason = consecutiveAbsent >= 17 ? "17 Hari Berturut-turut" : "40 Hari Tidak Berturut-turut";
+        }
+      } else if (consecutiveAbsent >= 10 || totalAbsentUnexcused >= 20) {
+        if (!letterTypes.includes("Amaran 2")) {
+          nextType = "Amaran 2";
+          triggerReason = consecutiveAbsent >= 10 ? "10 Hari Berturut-turut" : "20 Hari Tidak Berturut-turut";
+        }
+      } else if (consecutiveAbsent >= 3 || totalAbsentUnexcused >= 10) {
+        if (!letterTypes.includes("Amaran 1")) {
+          nextType = "Amaran 1";
+          triggerReason = consecutiveAbsent >= 3 ? "3 Hari Berturut-turut" : "10 Hari Tidak Berturut-turut";
+        }
+      }
+
+      if (nextType) {
         triggers.push({
-          ...student,
+          id: student.id, // Using student ID as trigger ID for simplicity
+          studentId: student.id,
+          studentName: student.name,
+          studentClass: student.class_name,
           consecutiveAbsent,
           totalAbsentUnexcused,
-          reason: consecutiveAbsent >= 3 ? "3 Hari Berturut-turut Tanpa Sebab" : "10 Hari Tidak Berturut-turut Tanpa Sebab"
+          reason: triggerReason,
+          type: nextType,
+          date: today
         });
       }
     }
     res.json(triggers);
+  });
+
+  app.post("/api/warning-letters", authenticateToken, (req, res) => {
+    const { studentId, type, date } = req.body;
+    try {
+      db.prepare("INSERT INTO warning_letters (student_id, type, date_issued) VALUES (?, ?, ?)").run(studentId, type, date);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Gagal merekod surat amaran" });
+    }
   });
 
   // Vite middleware for development

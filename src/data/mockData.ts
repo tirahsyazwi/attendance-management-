@@ -15,14 +15,13 @@ export const INITIAL_ATTENDANCE: Attendance[] = [
 export const INITIAL_WARNING_TRIGGERS: WarningTrigger[] = [
   { 
     id: 4, 
-    name: 'Muthu a/l Subramaniam', 
-    student_id: 'S004',
-    class_name: '5 Cekal', 
-    parent_name: 'Subramaniam',
-    parent_phone: '016-4445556',
-    address: 'No 4 KL',
+    studentId: 4,
+    studentName: 'Muthu a/l Subramaniam', 
+    studentClass: '5 Cekal', 
     consecutiveAbsent: 3,
     totalAbsentUnexcused: 3,
-    reason: 'Ponteng 3 hari berturut-turut', 
+    reason: 'Ponteng 3 hari berturut-turut',
+    type: 'Amaran 1',
+    date: '2026-02-28'
   },
 ];

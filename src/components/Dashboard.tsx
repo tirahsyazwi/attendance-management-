@@ -7,7 +7,8 @@ import {
   AlertTriangle, 
   TrendingUp, 
   TrendingDown,
-  ArrowRight
+  ArrowRight,
+  FileBarChart
 } from 'lucide-react';
 import { Student, WarningTrigger } from '../types';
 
@@ -22,7 +23,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ students, warningTriggers,
     { label: 'Jumlah Murid', value: students.length, icon: Users, color: 'indigo', trend: '+2 bulan ini' },
     { label: 'Kehadiran Hari Ini', value: '94%', icon: UserCheck, color: 'emerald', trend: '+1.2% dari semalam' },
     { label: 'Ketidakhadiran', value: '6%', icon: UserX, color: 'rose', trend: '-0.5% dari semalam' },
-    { label: 'Kes Amaran', value: warningTriggers.length, icon: AlertTriangle, color: 'amber', trend: '3 kes baru' },
+    { label: 'Kes Amaran', value: warningTriggers.length, icon: AlertTriangle, color: 'amber', trend: `${warningTriggers.length} kes aktif` },
   ];
 
   return (
@@ -53,34 +54,57 @@ export const Dashboard: React.FC<DashboardProps> = ({ students, warningTriggers,
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Activity */}
+        {/* Recent Activity or Warnings */}
         <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-            <h2 className="text-lg font-bold text-slate-900">Aktiviti Terkini</h2>
+            <h2 className="text-lg font-bold text-slate-900">
+              {warningTriggers.length > 0 ? 'Amaran Perlu Dijana' : 'Aktiviti Terkini'}
+            </h2>
             <button 
-              onClick={() => setCurrentView('attendance')}
+              onClick={() => setCurrentView(warningTriggers.length > 0 ? 'warnings' : 'attendance')}
               className="text-indigo-600 text-sm font-bold hover:underline flex items-center gap-1"
             >
               Lihat Semua <ArrowRight size={14} />
             </button>
           </div>
           <div className="divide-y divide-slate-50">
-            {[
-              { type: 'attendance', user: 'Ahmad Ali', action: 'ditandakan Hadir', time: '2 minit yang lalu', color: 'emerald' },
-              { type: 'warning', user: 'Muthu Subramaniam', action: 'mencapai Amaran 1', time: '1 jam yang lalu', color: 'amber' },
-              { type: 'attendance', user: 'Siti Aminah', action: 'ditandakan Bersebab', time: '2 jam yang lalu', color: 'blue' },
-              { type: 'status', user: 'Chong Wei Ming', action: 'status dikemaskini ke Aktif', time: '3 jam yang lalu', color: 'indigo' },
-            ].map((activity, idx) => (
-              <div key={idx} className="p-4 hover:bg-slate-50 transition-colors flex items-center gap-4">
-                <div className={`w-2 h-2 rounded-full bg-${activity.color}-500 shadow-lg shadow-${activity.color}-200`}></div>
-                <div className="flex-1">
-                  <p className="text-sm text-slate-700">
-                    <span className="font-bold text-slate-900">{activity.user}</span> {activity.action}
-                  </p>
-                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-0.5">{activity.time}</p>
+            {warningTriggers.length > 0 ? (
+              warningTriggers.slice(0, 4).map((trigger, idx) => (
+                <div key={idx} className="p-4 hover:bg-slate-50 transition-colors flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-100`}>
+                    {trigger.studentName?.charAt(0) || '?'}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-700">
+                      <span className="font-bold text-slate-900">{trigger.studentName || 'Murid'}</span> memerlukan <span className="font-bold text-amber-600">{trigger.type}</span>
+                    </p>
+                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-0.5">{trigger.reason}</p>
+                  </div>
+                  <button 
+                    onClick={() => setCurrentView('warnings')}
+                    className="p-2 text-slate-400 hover:text-indigo-600 transition-colors"
+                  >
+                    <ArrowRight size={18} />
+                  </button>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              [
+                { type: 'attendance', user: 'Ahmad Ali', action: 'ditandakan Hadir', time: '2 minit yang lalu', color: 'emerald' },
+                { type: 'attendance', user: 'Siti Aminah', action: 'ditandakan Bersebab', time: '2 jam yang lalu', color: 'blue' },
+                { type: 'status', user: 'Chong Wei Ming', action: 'status dikemaskini ke Aktif', time: '3 jam yang lalu', color: 'indigo' },
+              ].map((activity, idx) => (
+                <div key={idx} className="p-4 hover:bg-slate-50 transition-colors flex items-center gap-4">
+                  <div className={`w-2 h-2 rounded-full bg-${activity.color}-500 shadow-lg shadow-${activity.color}-200`}></div>
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-700">
+                      <span className="font-bold text-slate-900">{activity.user}</span> {activity.action}
+                    </p>
+                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-0.5">{activity.time}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -115,5 +139,3 @@ export const Dashboard: React.FC<DashboardProps> = ({ students, warningTriggers,
     </div>
   );
 };
-
-import { FileBarChart } from 'lucide-react';

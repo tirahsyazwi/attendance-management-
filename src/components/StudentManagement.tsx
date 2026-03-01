@@ -78,19 +78,19 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold border border-slate-200 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all">
-                        {student.name.charAt(0)}
+                        {student.name?.charAt(0) || '?'}
                       </div>
-                      <span className="font-bold text-slate-900">{student.name}</span>
+                      <span className="font-bold text-slate-900">{student.name || 'Murid'}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <span className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
-                      {student.class}
+                      {student.class_name || student.class}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="text-sm font-bold text-slate-700">{student.parentName}</p>
-                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-0.5">{student.parentPhone}</p>
+                    <p className="text-sm font-bold text-slate-700">{student.parent_name || student.parentName}</p>
+                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-0.5">{student.parent_phone || student.parentPhone}</p>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`

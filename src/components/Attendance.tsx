@@ -111,11 +111,11 @@ export const Attendance: React.FC<AttendanceProps> = ({
                       status === 'Bersebab' ? 'bg-blue-100 text-blue-600' : 
                       'bg-amber-100 text-amber-600'}
                   `}>
-                    {student.name.charAt(0)}
+                    {student.name?.charAt(0) || '?'}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 leading-tight">{student.name}</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{student.class}</p>
+                    <h3 className="font-bold text-slate-900 leading-tight">{student.name || 'Murid'}</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{student.class_name || student.class}</p>
                   </div>
                 </div>
               </div>

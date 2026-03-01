@@ -24,10 +24,16 @@ export interface Attendance {
   name?: string; // Joined from students
 }
 
-export interface WarningTrigger extends Student {
+export interface WarningTrigger {
+  id: number;
+  studentId: number;
+  studentName: string;
+  studentClass: string;
   consecutiveAbsent: number;
   totalAbsentUnexcused: number;
   reason: string;
+  type: string;
+  date: string;
 }
 
 export type ViewType = 'dashboard' | 'students' | 'attendance' | 'warnings' | 'reports';

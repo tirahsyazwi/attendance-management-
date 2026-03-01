@@ -19,6 +19,7 @@ interface SidebarProps {
   setIsSidebarOpen: (open: boolean) => void;
   user: User;
   onLogout: () => void;
+  warningCount: number;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
@@ -27,7 +28,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isSidebarOpen, 
   setIsSidebarOpen,
   user,
-  onLogout
+  onLogout,
+  warningCount
 }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -72,7 +74,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <item.icon size={20} className={currentView === item.id ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'} />
             <span className="font-semibold">{item.label}</span>
-            {currentView === item.id && (
+            {item.id === 'warnings' && warningCount > 0 && (
+              <span className="ml-auto bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {warningCount}
+              </span>
+            )}
+            {currentView === item.id && item.id !== 'warnings' && (
+              <motion.div layoutId="active-pill" className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-600" />
+            )}
+            {currentView === item.id && item.id === 'warnings' && warningCount === 0 && (
               <motion.div layoutId="active-pill" className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-600" />
             )}
           </button>
@@ -82,10 +92,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-4 border-t border-slate-100 space-y-4">
         <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold border border-indigo-200">
-            {user.name.charAt(0)}
+            {user.name?.charAt(0) || '?'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-slate-900 truncate">{user.name}</p>
+            <p className="text-sm font-bold text-slate-900 truncate">{user.name || 'Pengguna'}</p>
             <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider truncate">{user.role}</p>
           </div>
         </div>

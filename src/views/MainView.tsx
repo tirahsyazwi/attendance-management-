@@ -135,12 +135,26 @@ export const MainView: React.FC<MainViewProps> = ({ user, onLogout }) => {
     }
   };
 
-  const handlePrintLetter = (student: WarningTrigger) => {
-    setPrintingLetterStudent(student);
-    setTimeout(() => {
-      window.print();
-      setTimeout(() => setPrintingLetterStudent(null), 500);
-    }, 300);
+  const handlePrintLetter = async (student: WarningTrigger) => {
+    try {
+      setPrintingLetterStudent(student);
+      
+      // Record the letter in the database
+      await api.warnings.issueLetter(student.studentId, student.type, new Date().toISOString().split('T')[0]);
+      
+      // Trigger print
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => {
+          setPrintingLetterStudent(null);
+          // Refresh triggers so the issued one disappears
+          fetchInitialData();
+        }, 500);
+      }, 300);
+    } catch (err) {
+      alert('Gagal merekod surat amaran');
+      setPrintingLetterStudent(null);
+    }
   };
 
   const exportToCSV = (data: any[], filename: string) => {
@@ -166,6 +180,7 @@ export const MainView: React.FC<MainViewProps> = ({ user, onLogout }) => {
         setIsSidebarOpen={setIsSidebarOpen} 
         user={user}
         onLogout={onLogout}
+        warningCount={warningTriggers.length}
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">

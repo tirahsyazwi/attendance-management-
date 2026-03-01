@@ -52,11 +52,11 @@ export const Header: React.FC<HeaderProps> = ({ currentView, setIsSidebarOpen, u
           
           <button className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-xl hover:bg-slate-100 transition-all group">
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-slate-900 leading-none">{user.name}</p>
+              <p className="text-sm font-bold text-slate-900 leading-none">{user.name || 'Pengguna'}</p>
               <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider mt-1">{user.role}</p>
             </div>
             <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 border border-indigo-200 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-              {user.name.charAt(0)}
+              {user.name?.charAt(0) || '?'}
             </div>
           </button>
         </div>

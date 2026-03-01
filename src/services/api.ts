@@ -86,6 +86,14 @@ export const api = {
       });
       if (!res.ok) throw new Error('Gagal memuat amaran');
       return res.json();
+    },
+    issueLetter: async (studentId: number, type: string, date: string): Promise<void> => {
+      const res = await fetch('/api/warning-letters', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ studentId, type, date })
+      });
+      if (!res.ok) throw new Error('Gagal merekod surat amaran');
     }
   },
   reports: {
