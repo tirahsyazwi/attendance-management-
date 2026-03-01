@@ -1,0 +1,5 @@
+{
+  "name": "GuruAttend - Sistem Kehadiran KPM",
+  "description": "Sistem pengurusan kehadiran murid sekolah mengikut standard KPM dengan penjanaan surat amaran automatik dan laporan APDM.",
+  "requestFramePermissions": []
+}
